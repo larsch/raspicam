@@ -23,40 +23,16 @@ led_spacing = 10.0;
 mount_screw_diam = 4.1;
 mount_nut_diam = 8;
 
-case_screw_inner_r = 2.5/2;
-case_screw_outer_r = 3/2;
+// case screw sizes (for mounting front and back plates)
+case_screw_thread_diameter = 2.5;
+case_screw_shaft_diameter = 3 + 0.1;
 case_screw_length = 13;
-case_screw_head_r = 5.5/2;
-case_screw_head_length = 2;
+case_screw_head_diameter = 5.5;
+case_screw_head_height = 2;
 
 internals = false;
 
 use <rpi.scad>;
-
-module led_ring(led_ring_radius) {
-    divisions = floor((led_ring_radius * 2 * PI) / (led_radius * 2 + led_spacing));
-    led_sep_angle = 360.0 / divisions;
-    for (i = [0 : divisions - 1])
-        rotate(i * led_sep_angle, [0, 0, 1])
-        translate([led_ring_radius, 0, 0])
-        translate([0,0,-10])
-        cylinder(h = 20.0, r = led_radius);
-}
-
-* difference() {
-    translate([-50.0, -50.0, 0.0])
-    cube([100.0,100.0,5.0]);
-    led_ring(40.0);
-    led_ring(30.0);
-}
-
-* union() {
-    cylinder(h = 5.2, d = 5.5); // inner lens ring
-    cylinder(h = 4.5, d = 7.5); // outer lens ring
-    translate([-4.0, -4.0, 0.0]) cube([8.0, 8.0, 3.5]); // camera house
-}
-
-
 
 module camera_hole(depth = 100.0) {
      border = 3.0;
@@ -149,9 +125,9 @@ module screw_holes(d) {
 }
 
 screw_support_r = 10;
-screw_support_move_dist = outer_radius-3+screw_support_r-case_screw_head_r-3;
+screw_support_move_dist = outer_radius-3+screw_support_r-case_screw_head_diameter/2-3;
 screw_support_cone_length = 30;
-case_screw_move_dist = outer_radius-3-case_screw_head_r;
+case_screw_move_dist = outer_radius-3-case_screw_head_diameter/2;
 
 module screw_support_cone() {
      intersection() {
@@ -164,18 +140,18 @@ module screw_support_cone() {
      }
 }
 
-module screw_support(r, l) {
+module screw_support(hole_diameter, length) {
      intersection() {
 	  for (i=[0:2]) {
 	       rotate(360/3*i, [0,0,1])
 		    difference() {
 		    translate([screw_support_move_dist,0,0])
-			 cylinder(r = screw_support_r, h = l);
+			 cylinder(r = screw_support_r, h = length);
 		    translate([case_screw_move_dist,0,-1])
-			 cylinder(r = case_screw_inner_r, h = l + 2);
+			 cylinder(d = hole_diameter, h = length + 2);
 	       }
 	  }
-	  cylinder(r = outer_radius, h = l);
+	  cylinder(r = outer_radius, h = length);
      }
 }
 
@@ -202,7 +178,8 @@ module front_plate() {
 	  }
      }
      # translate([0,0,front_thickness + front_extra])
-     screw_support(case_screw_inner_r, front_inner_depth - 0.25);
+     rotate(10,[0,0,1])
+     screw_support(case_screw_thread_diameter, front_inner_depth - 0.25);
 }
 
 raspi_width = 85;
@@ -233,22 +210,6 @@ raspi_lower = 26;
 
 module outer_cylinder() {
      cylinder(r = outer_radius, h = house_length);
-}
-
-module screw_supports() {
-     support_radius = 12;
-     rotate(90, [0,1,0])
-     intersection() {
-	  for (i = [0:2])
-	       rotate(360/3 * i, [0,0,1])
-		    difference() {
-		    translate([outer_radius - thickness - 1.5 + support_radius - 3,0,0])
-			 cylinder(r = support_radius, h = house_length);
-		    translate([outer_radius - thickness - 1.5, 0, 0])
-			 cylinder(d = 2.5, h = house_length);
-	       }
-	  outer_cylinder();
-     }
 }
 
 mount_screw_diam = 3.1;
@@ -380,21 +341,21 @@ module shell() {
 	  }
 	  frame_mount_screw_cutout();
      }
-     // screw_supports();
+
      raspi_mount();
      power_mount();
-     front_screw_supports();
+     screw_supports();
 
-     module front_screw_supports() {
+     module screw_supports() {
 	  twist = 10;
 	  rotate(twist,[1,0,0])
 	       rotate(90,[0,1,0])
-	       screw_support(case_screw_outer_r, case_screw_length - front_inner_depth);
+	       screw_support(case_screw_shaft_diameter, case_screw_length - front_inner_depth);
 	  
 	  rotate(-twist,[1,0,0]) union() {
 	       translate([house_length - (case_screw_length-3),0,0])
 	       rotate(90,[0,1,0])
-	       screw_support(case_screw_outer_r, case_screw_length - 3 - 0.25);
+	       screw_support(case_screw_thread_diameter, case_screw_length - 3 - 0.25);
 	       translate([house_length - (case_screw_length-3) - screw_support_cone_length,0,0])
 	       rotate(90,[0,1,0])
 	       screw_support_cone();
@@ -415,8 +376,8 @@ module back_plate() {
      }
      module screw_hole() {
 	  union() {
-	       translate([0,0,2]) cylinder(r = case_screw_head_r, h = 2); // screw head
-	       translate([0,0,-1]) cylinder(r = case_screw_outer_r, h = 5); // screw hole
+	       translate([0,0,2]) cylinder(d = case_screw_head_diameter, h = 2); // screw head
+	       translate([0,0,-1]) cylinder(d = case_screw_shaft_diameter, h = 5); // screw hole
 	  }
      }
      module screw_holes() {
