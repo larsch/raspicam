@@ -138,7 +138,7 @@ module screw_support_cone() {
 		    translate([screw_support_move_dist,0,0])
 		    cylinder(screw_support_cone_length, screw_support_r / 3, screw_support_r);
 	  }
-	  cylinder(r = outer_radius, h = screw_support_cone_length);
+	  cylinder(r = outer_radius - 0.1, h = screw_support_cone_length);
      }
 }
 
@@ -153,7 +153,7 @@ module screw_support(hole_diameter, length) {
 			 cylinder(d = hole_diameter, h = length + 2);
 	       }
 	  }
-	  cylinder(r = outer_radius, h = length);
+	  cylinder(r = outer_radius - 0.1, h = length);
      }
 }
 
