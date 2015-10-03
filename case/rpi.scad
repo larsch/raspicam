@@ -19,7 +19,7 @@ module usb ()
 	{
 	//usb port
 	color("silver")
-	translate([length-9.5,25,height]) cube([17.3,13.3,16]);
+	translate([length-9.5,25,height+0.5]) cube([17.3,13.3,15.5]);
 	}
 
 module composite ()
@@ -63,8 +63,8 @@ module gpio ()
 module hdmi ()
 	{
 	color ("silver")
-	translate ([37.1,-1,height])
-	cube([15.1,11.7,8-height]);
+	translate ([37.1,-1,height+0.5])
+	cube([15.1,11.7,5.5]);
 	}
 
 module power ()

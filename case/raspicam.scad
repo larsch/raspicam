@@ -179,35 +179,51 @@ module front_plate() {
 	       hollow_cylinder(outer_radius, outer_radius - 3, front_extra + front_thickness + front_inner_depth);
 	  }
      }
-     # translate([0,0,front_thickness + front_extra])
+     translate([0,0,front_thickness + front_extra])
      rotate(10,[0,0,1])
      screw_support(case_screw_thread_diameter, front_inner_depth - 0.25);
 }
 
-raspi_width = 85;
-raspi_depth = 56;
-rasp_height = 22;
+rpi_length = 85;
+rpi_width = 56;
+rpi_height = 22; // excessive
+gap = 0.25;
 module raspi_cutout() {
-     translate([-18.1,0,-3.5])
-	  union() {
-	  translate([18.0,0,0])
-	       difference() {
-	       cube([raspi_width, raspi_depth, rasp_height]);
-	       translate([-1,43,5]) cube([5,5,rasp_height-5]); // support
-	       translate([-1,14.1,5]) cube([5,3.5,rasp_height-5]); // support
+     neg_cut = 35;
+     pos_cut = 30;
+
+     module support() {
+	  w = 5;
+	  difference() {
+	       translate([-neg_cut,0,-1]) cube([neg_cut-gap+5, 5, 3.5+5+1+gap]);
+	       translate([-gap,-1,-3]) cube([w+1,w+2,5+gap+3]);
 	  }
-	  translate([-12,18,0]) cube([30+1,24,5]); // sd card
-	  translate([-12,0,1]) cube([30+1,14,7+14]); // power cable
-	  translate([85+18-1,1.5+16+6,3.5]) cube([80+1,15,17]); // USB port
-	  translate([85+18-1,1.5,2.5]) cube([80+1,16,16]); // Ethernet port
-	  translate([54,-2,5]) cube([49,2+1,6]); // HDMI
-	  translate([57,56-1,9.5]) cube([46,8+1,9]); // composite + audio
+     }
+
+     sd_offset1 = 18;
+     sd_offset2 = 42;
+     supportw = 5;
+     union() {
+	  translate([0,0,-3.5])
+	    difference() {
+	       translate([-neg_cut+0.01,-gap,-gap])
+		    cube([rpi_length + neg_cut + gap, rpi_width+2*gap, rpi_height+1*gap]);
+	       translate([0,sd_offset1-supportw-1,0]) support();
+	       translate([0,sd_offset2+1,0]) support();
+	  }
+	  translate([rpi_length-1,24-gap,1.5+0.5-gap]) cube([pos_cut+1,15+2*gap,15.5+2*gap]); // USB port
+	  translate([rpi_length-1,1.5-gap,1.5-gap]) cube([pos_cut+1,16+2*gap,13.25+2*gap]); // Ethernet port
+	  translate([37-gap,-2,1.5+0.5-gap]) cube([rpi_length-37+2*gap,2+1,5.5+2*gap]); // HDMI */
+	  translate([-rpi_inset-1,-50,1.5+0.5+5.5+3]) cube([rpi_length+rpi_inset+2*gap+2,50,rpi_height]); // left cutout
+	  translate([42-gap,56-1,3.5+1.5]) cube([rpi_length-42+2*gap,8+1,9]); // composite
+	  translate([61-gap,56,4.5-gap]) cube([rpi_length-61+2*gap,3.25+gap,6.75+2*gap]); // audio
      }
 }
 
 thickness = 3.0;
-house_length = 30 + 85;
-raspi_position = [ 30, -25, -26 ];
+rpi_inset = 20;
+house_length = rpi_inset + rpi_length + 2*gap;
+raspi_position = [ 20, -27.5, -26 ];
 raspi_lower = 26;
 
 module outer_cylinder() {
@@ -325,8 +341,8 @@ module shell() {
 	  intersection() {
 	       translate(raspi_position)
 		    difference() {
-		    translate([-30, -outer_radius, -thickness - 3.5])
-			 cube([house_length-0.25, 4*outer_radius+2,rasp_height + thickness - 1]);
+		    translate([-rpi_inset, -outer_radius, -thickness - 3.5])
+			 cube([house_length-gap-0.01, 4*outer_radius+2,rpi_height + thickness - 1]);
 		    raspi_cutout();
 	       }
 	       rotate(90,[0,1,0]) outer_cylinder();
