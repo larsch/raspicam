@@ -20,8 +20,10 @@ led_ring_radius = 40.0;
 led_spacing = 10.0;
 
 // frame mount screw sizes
-mount_screw_diam = 4.1;
-mount_nut_diam = 8;
+mount_screw_shaft_diameter = 4 + 0.25;
+mount_nut_diameter = 8;
+mount_screw_head_diameter = 8;
+mount_screw_head_height = 2;
 
 // case screw sizes (for mounting front and back plates)
 case_screw_thread_diameter = 2.5;
@@ -212,12 +214,9 @@ module outer_cylinder() {
      cylinder(r = outer_radius, h = house_length);
 }
 
-mount_screw_diam = 3.1;
-
-
 module outer_cone() {
      translate([0,0,-5])
-     cylinder($fn = 32, 15, 25, mount_screw_diam/2 + 3);
+     cylinder($fn = 32, 15, 25, mount_screw_shaft_diameter/2 + 3);
      /* cylinder($fn = 32, 10, 20, 5); */
 }
 
@@ -240,12 +239,12 @@ module shell() {
 
 	  module nut() {
 	       linear_extrude(height = 10)
-	       circle($fn = 6, d = mount_nut_diam);
+	       circle($fn = 6, d = mount_nut_diameter);
 	  }
 
 	  module inner_cone() {
 	       difference() {
-		    cylinder(10, 27, mount_nut_diam/2 + 3);
+		    cylinder(10, 27, mount_nut_diameter/2 + 3);
 		    translate([0, 0, 10 - 2.5])
 			 nut();
 	       }
@@ -274,7 +273,7 @@ module shell() {
      module frame_mount_screw_cutout() {
 	  translate([house_length/2,1.5*outer_radius,0])
 	       rotate(90, [1,0,0])
-	       cylinder(d = mount_screw_diam + 0.1, h = 3 * outer_radius);
+	       cylinder(d = mount_screw_shaft_diameter + 0.1, h = 3 * outer_radius);
      }	  
 
      module power_mount() {
@@ -420,8 +419,10 @@ module mount() {
 			 translate([y - 1.5 * mount_curve_radius,0,-1])
 			 cylinder(h = mount_thickness + 2, r = mount_curve_radius * 0.2);
 
-	  translate([y,0,0])
-	       cylinder(d=mount_screw_diam,mount_thickness);
+	  translate([y,0,-1])
+	       cylinder(d=mount_screw_shaft_diameter,mount_thickness+2);
+	  translate([y,0,-1])
+	       cylinder(d = mount_screw_head_diameter, h = mount_screw_head_height + 1);
 	  translate([y,0,mount_thickness+10-3])
 	       rotate(180,[1,0,0])
 	       outer_cone();
