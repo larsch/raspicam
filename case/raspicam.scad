@@ -188,8 +188,8 @@ rpi_length = 85;
 rpi_width = 56;
 rpi_height = 22; // excessive
 gap = 0.25;
-module raspi_cutout() {
-     neg_cut = 35;
+module rpi_cutout() {
+     neg_cut = 30;
      pos_cut = 30;
 
      module support() {
@@ -205,11 +205,17 @@ module raspi_cutout() {
      supportw = 5;
      union() {
 	  translate([0,0,-3.5])
-	    difference() {
-	       translate([-neg_cut+0.01,-gap,-gap])
-		    cube([rpi_length + neg_cut + gap, rpi_width+2*gap, rpi_height+1*gap]);
+	       difference() {
+	       translate([-neg_cut+0.01,-gap,-20])
+		    cube([rpi_length + neg_cut + gap, rpi_width+2*gap, rpi_height+20]);
+	       translate([-neg_cut,-10,-20-gap])
+		    cube([neg_cut + 10,rpi_width+20,20]);
 	       translate([0,sd_offset1-supportw-1,0]) support();
 	       translate([0,sd_offset2+1,0]) support();
+	       translate([-neg_cut-1,-5+1,-30+3.5-gap]) cube([rpi_length+neg_cut+2,5,30]);
+	       translate([-neg_cut-1,rpi_width-1,-30+3.5-gap]) cube([rpi_length+neg_cut+2,5,30]);
+	       translate([-gap-neg_cut,-4,5+gap]) cube([37+neg_cut,5,1.5+2*gap]); // left ridge above pcb
+	       translate([-gap-neg_cut,rpi_width-1,5+gap]) cube([rpi_length+neg_cut+5,5,1.5+2*gap]);
 	  }
 	  translate([rpi_length-1,24-gap,1.5+0.5-gap]) cube([pos_cut+1,15+2*gap,15.5+2*gap]); // USB port
 	  translate([rpi_length-1,1.5-gap,1.5-gap]) cube([pos_cut+1,16+2*gap,13.25+2*gap]); // Ethernet port
@@ -221,9 +227,9 @@ module raspi_cutout() {
 }
 
 thickness = 3.0;
-rpi_inset = 20;
+rpi_inset = 18+gap;
 house_length = rpi_inset + rpi_length + 2*gap;
-raspi_position = [ 20, -27.5, -26 ];
+raspi_position = [ rpi_inset, -27.5, -26 ];
 raspi_lower = 26;
 
 module outer_cylinder() {
@@ -343,7 +349,7 @@ module shell() {
 		    difference() {
 		    translate([-rpi_inset, -outer_radius, -thickness - 3.5])
 			 cube([house_length-gap-0.01, 4*outer_radius+2,rpi_height + thickness - 1]);
-		    raspi_cutout();
+		    rpi_cutout();
 	       }
 	       rotate(90,[0,1,0]) outer_cylinder();
 	  }
@@ -410,7 +416,7 @@ module back_plate() {
 	       screw_holes();
 	  rotate(-90, [0,1,0])
 	       translate([-house_length,raspi_position[1],raspi_position[2]])
-	       raspi_cutout();
+	       rpi_cutout();
 	  translate([-5,0,0]) power_jack_cutcout();
      }
 }
