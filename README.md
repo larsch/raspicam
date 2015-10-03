@@ -21,6 +21,14 @@ stand.
 ![alt tag](https://raw.github.com/larsch/raspicam/master/images/internals.png)
 ![alt tag](https://raw.github.com/larsch/raspicam/master/images/print.png)
 
+## Credits
+
+Created by Lars Christensen
+
+[Raspberry Pi
+model](https://github.com/TomHodson/Raspberry-Pi-OpenSCAD-Model) by
+Tom Hodson.
+
 ## License
 
 ![Creative Commons License](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)
