@@ -32,9 +32,13 @@ case_screw_length = 13;
 case_screw_head_diameter = 5.5;
 case_screw_head_height = 2;
 
+// camera screw sizes
+cam_screw_thread_diameter = 1.75;
+
 internals = false;
 
 use <rpi.scad>;
+use <cam.scad>;
 
 module camera_hole(depth = 100.0) {
      border = 3.0;
@@ -42,10 +46,10 @@ module camera_hole(depth = 100.0) {
      pcb_outer_margin = 0.5;
 
      module screw_holes() {
-	  translate([2,2,0]) cylinder(h = 3.5, d = 2.0);
-	  translate([2,23,0]) cylinder(h = 3.5, d = 2.0);
-	  translate([14.5,2,0]) cylinder(h = 3.5, d = 2.0);
-	  translate([14.5,23,0]) cylinder(h = 3.5, d = 2.0);
+	  translate([2,2,0]) cylinder(h = 3.5, d = cam_screw_thread_diameter);
+	  translate([2,23,0]) cylinder(h = 3.5, d = cam_screw_thread_diameter);
+	  translate([14.5,2,0]) cylinder(h = 3.5, d = cam_screw_thread_diameter);
+	  translate([14.5,23,0]) cylinder(h = 3.5, d = cam_screw_thread_diameter);
      }
 
      module screw_supports() {
@@ -182,6 +186,12 @@ module front_plate() {
      translate([0,0,front_thickness + front_extra])
      rotate(10,[0,0,1])
      screw_support(case_screw_thread_diameter, front_inner_depth - 0.25);
+
+     if (internals) {
+	  translate([14.25,-12.5,10])
+	  rotate(180,[0,1,0])
+	  rpi_camera();
+     }
 }
 
 rpi_length = 85;
