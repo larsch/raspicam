@@ -35,6 +35,10 @@ case_screw_head_height = 2;
 // camera screw sizes
 cam_screw_thread_diameter = 1.75;
 
+// amount to rotate front/back screws so the front ones can be
+// accessed from behind
+twist = 8;
+
 internals = false;
 
 use <rpi.scad>;
@@ -177,14 +181,14 @@ module front_plate() {
 		    translate([0,0,-front_extra])
 			 cylinder(r = outer_radius, h = front_extra + front_thickness);
 		    camera_hole();
-		    rotate(45, [0,0,1])
+		    rotate(45 - twist, [0,0,1])
 			 ir_led_cutout();
 	       }
 	       hollow_cylinder(outer_radius, outer_radius - 3, front_extra + front_thickness + front_inner_depth);
 	  }
      }
      translate([0,0,front_thickness + front_extra])
-     rotate(10,[0,0,1])
+     rotate(twist,[0,0,1])
      screw_support(case_screw_thread_diameter, front_inner_depth - 0.25);
 
      if (internals) {
@@ -378,7 +382,6 @@ module shell() {
      screw_supports();
 
      module screw_supports() {
-	  twist = 10;
 	  rotate(twist,[1,0,0])
 	       rotate(90,[0,1,0])
 	       screw_support(case_screw_shaft_diameter, case_screw_length - front_inner_depth);
