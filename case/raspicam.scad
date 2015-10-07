@@ -40,6 +40,7 @@ cam_screw_thread_diameter = 1.75;
 twist = 8;
 
 internals = false;
+thickness = 2.5;
 
 use <rpi.scad>;
 use <cam.scad>;
@@ -135,9 +136,9 @@ module screw_holes(d) {
 }
 
 screw_support_r = 10;
-screw_support_move_dist = outer_radius-3+screw_support_r-case_screw_head_diameter/2-3;
+case_screw_move_dist = outer_radius - thickness - case_screw_head_diameter/2;
+screw_support_move_dist = case_screw_move_dist + screw_support_r - case_screw_shaft_diameter/2 - thickness;
 screw_support_cone_length = 30;
-case_screw_move_dist = outer_radius-3-case_screw_head_diameter/2;
 
 module screw_support_cone() {
      intersection() {
@@ -146,7 +147,7 @@ module screw_support_cone() {
 		    translate([screw_support_move_dist,0,0])
 		    cylinder(screw_support_cone_length, screw_support_r / 3, screw_support_r);
 	  }
-	  cylinder(r = outer_radius - 0.1, h = screw_support_cone_length);
+	  cylinder(r = outer_radius - thickness/2, h = screw_support_cone_length);
      }
 }
 
@@ -161,7 +162,7 @@ module screw_support(hole_diameter, length) {
 			 cylinder(d = hole_diameter, h = length + 2);
 	       }
 	  }
-	  cylinder(r = outer_radius - 0.1, h = length);
+	  cylinder(r = outer_radius - thickness/2, h = length);
      }
 }
 
@@ -184,7 +185,7 @@ module front_plate() {
 		    rotate(45 - twist, [0,0,1])
 			 ir_led_cutout();
 	       }
-	       hollow_cylinder(outer_radius, outer_radius - 3, front_extra + front_thickness + front_inner_depth);
+	       hollow_cylinder(outer_radius, outer_radius - thickness, front_extra + front_thickness + front_inner_depth);
 	  }
      }
      translate([0,0,front_thickness + front_extra])
@@ -240,7 +241,6 @@ module rpi_cutout() {
      }
 }
 
-thickness = 3.0;
 rpi_inset = 18+gap;
 house_length = rpi_inset + rpi_length + 2*gap;
 raspi_position = [ rpi_inset, -27.5, -26 ];
@@ -280,7 +280,7 @@ module shell() {
 
 	  module inner_cone() {
 	       difference() {
-		    cylinder(10, 27, mount_nut_diameter/2 + 3);
+		    cylinder(10, 27, mount_nut_diameter/2 + thickness);
 		    translate([0, 0, 10 - 2.5])
 			 nut();
 	       }
@@ -424,7 +424,7 @@ module back_plate() {
 	  }
      }
      difference() {
-	  cylinder(r = outer_radius, h = 3); // back plate
+	  cylinder(r = outer_radius, h = thickness); // back plate
 	  rotate(-10,[0,0,1])
 	       screw_holes();
 	  rotate(-90, [0,1,0])
