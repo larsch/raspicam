@@ -10,9 +10,6 @@
 // case, because I wanted the case to be small and it doesn't line up
 // well.
 
-$fn = 128;
-// $fs = 0.1;
-// $fa = 6;
 epsilon = 0.01;
 
 led_radius = 2.5;
